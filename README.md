@@ -1,1 +1,1 @@
-# Hackaton_INT20_2025
+# Hackathon_INT20_2025
