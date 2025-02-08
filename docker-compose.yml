@@ -1,0 +1,72 @@
+services:
+  backend-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-app
+    ports:
+      - "8010:80"
+    volumes:
+      - ./backend:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=laravel
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+      - CACHE_DRIVER=redis
+      - QUEUE_CONNECTION=sync
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app_network
+
+#  frontend:
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+#    container_name: hackathon-frontend_app
+#    restart: always
+#    depends_on:
+#      - backend
+#    ports:
+#      - "3000:3000"
+#    volumes:
+#      - ./frontend:/app
+#    networks:
+#      - app_network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6380:6379"
+    networks:
+      - app_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3303:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: enigma
+      MYSQL_PASSWORD: secret
+    volumes:
+      - mysql_data_hackathon:/var/lib/mysql
+    networks:
+      - app_network
+
+networks:
+    app_network:
+
+volumes:
+  mysql_data_hackathon:
