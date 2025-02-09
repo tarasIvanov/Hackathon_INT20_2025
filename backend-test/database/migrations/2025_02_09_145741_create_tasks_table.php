@@ -16,14 +16,15 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Quest::class);
-            $table->string('task_number');
+            $table->smallInteger('task_number', false, true);
             $table->string('name');
             $table->text('question');
             $table->text('answer');
             $table->enum('type', ['text', 'multiple-choice'])->default('text');
-            $table->smallInteger('time_limit');
+            $table->smallInteger('time_limit', false, true);
             $table->string('media')->nullable();
             $table->timestamps();
+            $table->unique(['quest_id', 'task_number']);
         });
     }
 

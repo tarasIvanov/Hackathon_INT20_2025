@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Quest;
+use App\Models\Task;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,9 +19,9 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         $quests = Quest::pluck('id')->toArray();
+
         return [
             'quest_id' => $this->faker->randomElement($quests),
-            'task_number' => $this->faker->unique()->randomNumber(1),
             'name' => $this->faker->name(),
             'question' => $this->faker->text(),
             'answer' => $this->faker->text(),

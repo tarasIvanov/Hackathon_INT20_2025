@@ -58,6 +58,19 @@ class QuestController extends Controller
         }
     }
 
+    public function show(Quest $quest): JsonResponse
+    {
+        $tasks = $quest->tasks()->get();
+
+        $data = [
+            'status' => 200,
+            'quest' => $quest,
+            'tasks' =>$tasks
+        ];
+
+        return response()->json($data, 200);
+    }
+
     public function update(Request $request, Quest $quest): JsonResponse {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
@@ -100,13 +113,4 @@ class QuestController extends Controller
 
         return response()->json($data, 200);
     }
-
-//    public function show(Quest $quest): JsonResponse
-//    {
-//        $data = [
-//            'status' => 200,
-//            'quest' => $quest,
-//
-//        ];
-//    }
 }
