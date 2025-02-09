@@ -8,5 +8,5 @@ export default defineConfig({
     port: 3000, // Port for `npm run preview`
     host: true,
     strictPort: true,
-  },
+  }
 });
