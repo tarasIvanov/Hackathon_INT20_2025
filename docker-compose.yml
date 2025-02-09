@@ -27,20 +27,20 @@ services:
     networks:
       - app_network
 
-#  frontend:
-#    build:
-#      context: ./frontend
-#      dockerfile: Dockerfile
-#    container_name: hackathon-frontend_app
-#    restart: always
-#    depends_on:
-#      - backend
-#    ports:
-#      - "3000:3000"
-#    volumes:
-#      - ./frontend:/app
-#    networks:
-#      - app_network
+  frontend:
+   build:
+     context: ./frontend
+     dockerfile: Dockerfile
+   container_name: hackathon-frontend_app
+   restart: always
+   depends_on:
+     - backend-app
+   ports:
+     - "3000:3000"
+   volumes:
+     - ./frontend:/app
+   networks:
+     - app_network
 
   redis:
     image: redis:alpine
