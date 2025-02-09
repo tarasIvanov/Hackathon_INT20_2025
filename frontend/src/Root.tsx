@@ -1,11 +1,13 @@
 // import { lazy, Suspense } from "react";
 
 import { HashRouter, Routes, Route, Navigate } from "react-router";
+import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 
 import App from "./App";
 
 import { HomePage } from "./pages/HomePage";
-import { LoginPage } from "./pages/LoginPage";
+import SingInPage from "./pages/SingInPage/SingInPage";
+import SingUpPage from "./pages/SingUpPage/SingUpPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { QuestPage } from "./pages/QuestPage";
 import { ProfilePage } from "./pages/ProfilePage";
@@ -24,30 +26,36 @@ import { СreateQuestPage } from "./pages/СreateQuestPage";
 
 export const Root = () => (
   <HashRouter>
-    <Routes>
-      <Route path="/" element={<App />}>
-        <Route index element={<HomePage />} />
+    <ReactRouterAppProvider>
+      <Routes>
+        <Route path="/" element={<App />}>
+          <Route index element={<HomePage />} />
 
-        <Route path="home" element={<Navigate to="/" replace />} />
+          <Route path="home" element={<Navigate to="/" replace />} />
 
-        <Route path="login">
-          <Route index element={<LoginPage />} />
+          <Route path="sing-in">
+            <Route index element={<SingInPage />} />
+          </Route>
+
+          <Route path="sing-up">
+            <Route index element={<SingUpPage />} />
+          </Route>
+
+          <Route path="profile">
+            <Route index element={<ProfilePage />} />
+          </Route>
+
+          <Route path="create">
+            <Route index element={<СreateQuestPage />} />
+          </Route>
+
+          <Route path="quest">
+            <Route index element={<QuestPage />} />
+          </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-
-        <Route path="profile">
-          <Route index element={<ProfilePage />} />
-        </Route>
-
-        <Route path="create">
-          <Route index element={<СreateQuestPage />} />
-        </Route>
-
-        <Route path="quest">
-          <Route index element={<QuestPage />} />
-        </Route>
-
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
-    </Routes>
+      </Routes>{" "}
+    </ReactRouterAppProvider>
   </HashRouter>
 );
