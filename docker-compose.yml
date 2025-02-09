@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: hackathon-backend-app
+    container_name: backend-app-hackathon
     restart: always
     ports:
       - "8010:8010"
@@ -28,11 +28,11 @@ services:
     networks:
       - app_network
 
-  frontend:
+  frontend-app:
    build:
      context: ./frontend
      dockerfile: Dockerfile
-   container_name: hackathon-frontend_app
+   container_name: frontend_app-hackathon
    restart: always
    depends_on:
      - backend-app
