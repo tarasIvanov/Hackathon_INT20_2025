@@ -1,7 +1,6 @@
 // import { lazy, Suspense } from "react";
 
 import { HashRouter, Routes, Route, Navigate } from "react-router";
-import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 
 import App from "./App";
 
@@ -26,7 +25,6 @@ import { СreateQuestPage } from "./pages/СreateQuestPage";
 
 export const Root = () => (
   <HashRouter>
-    <ReactRouterAppProvider>
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<HomePage />} />
@@ -56,6 +54,5 @@ export const Root = () => (
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>{" "}
-    </ReactRouterAppProvider>
   </HashRouter>
 );

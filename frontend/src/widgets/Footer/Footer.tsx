@@ -1,57 +1,21 @@
-import { FC } from 'react';
-import { NavLink } from 'react-router';
-import { scrollToTop } from '../../utils/scrolltoTop';
-import { IoChevronUpCircleOutline } from "react-icons/io5";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Button from "@mui/material/Button";
+import { Link } from "react-router";
 
-import style from './Footer.module.scss';
-
-export const Footer: FC = () => {
-  const navigation = [
-    {
-      href: '',
-      name: 'Github',
-    },
-    {
-      href: '',
-      name: 'Contacts',
-    },
-    {
-      href: '',
-      name: 'Rules',
-    },
-  ];
-
+export const Footer = () => {
   return (
-    <footer className={style.footer}>
-      <a
-        href="#"
-        className={style.logo__link}>
-        <h1>Logo</h1>
-      </a>
-      <nav className={style.nav}>
-        <ul className={style.nav__list}>
-          {navigation.map(({ href, name }) => (
-            <li
-              key={name}
-              className={style.nav__item}>
-              <NavLink
-                to={href}
-                target="_blank"
-                className={style.nav__link}>
-                {name}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      <button
-        className={style.backToTop}
-        onClick={scrollToTop}>
-        <p className={style.backToTop__text}>Back to top</p>
-        <div className={style.backToTop__button}>
-          <IoChevronUpCircleOutline />
-        </div>
-      </button>
-    </footer>
+    <Box sx={{ mt: 4, width:"100%"}}>
+      <AppBar position="static">
+        <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
+          <Box sx={{ display: "flex", gap: 4 }}>
+            <Button component={Link} to="/about-us" color="inherit">About us</Button>
+            <Button component={Link} to="/contacts" color="inherit">Contacts</Button>
+            <Button component={Link} to="/rights" color="inherit">Rights</Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 };
