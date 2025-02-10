@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\AnswerOptionController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\QuestController;
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,3 +32,25 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::patch('/user', [UserController::class, 'update']);
     Route::delete('/user', [UserController::class, 'destroy']);
 });
+
+Route::get('/quest', [QuestController::class, 'index']);
+Route::get('/quest/{quest}', [QuestController::class, 'show']);
+Route::post('/quest', [QuestController::class, 'store']);
+Route::put('/quest/{quest}', [QuestController::class, 'update']);
+Route::delete('/quest/{quest}', [QuestController::class, 'destroy']);
+
+
+Route::get('/task', [TaskController::class, 'index']);
+Route::post('/task', [TaskController::class, 'store']);
+Route::get('/task/{task}', [TaskController::class, 'show']);
+Route::put('/task/{task}', [TaskController::class, 'update']);
+Route::delete('/task/{task}', [TaskController::class, 'destroy']);
+
+Route::get('/answer_option', [AnswerOptionController::class, 'index']);
+Route::get('/answer_option/{answerOption}', [AnswerOptionController::class, 'show']);
+Route::post('/answer_option', [AnswerOptionController::class, 'store']);
+Route::put('/answer_option/{answerOption}', [AnswerOptionController::class, 'update']);
+Route::delete('/answer_option/{answerOption}', [AnswerOptionController::class, 'destroy']);
+
+Route::get('/rating', [RatingController::class, 'index']);
+Route::get('/rating/{rating}', [RatingController::class, 'show']);
