@@ -2,61 +2,48 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Exceptions\Auth\InvalidCredentialsException;
+use App\Exceptions\Auth\UserAlreadyExistsException;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\Api\V1\Auth\LoginRequest;
+use App\Http\Requests\Api\V1\Auth\RegisterRequest;
+use App\Services\Auth\AuthenticationHandler;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function __construct(
+        private readonly AuthenticationHandler $authHandler
+    ) {}
+
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
-
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        try {
+            $result = $this->authHandler->register($request->validated());
+            return response()->json($result, 201);
+        } catch (UserAlreadyExistsException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
-
-        return response()->json([
-            'user' => $user,
-            'token' => $user->createToken('auth-token')->plainTextToken,
-        ]);
     }
 
-    public function logout(Request $request)
+    public function login(LoginRequest $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        try {
+            $result = $this->authHandler->login($request->validated());
+            return response()->json($result);
+        } catch (InvalidCredentialsException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+    }
 
-        return response()->json(['message' => 'Logged out successfully']);
+    public function logout(Request $request): JsonResponse
+    {
+        try {
+            $this->authHandler->logout($request->user()->currentAccessToken()->id);
+            return response()->json(['message' => 'Successfully logged out']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Logout failed'], 500);
+        }
     }
 }
