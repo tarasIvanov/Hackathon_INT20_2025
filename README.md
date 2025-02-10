@@ -13,7 +13,8 @@ cd Hackaton_INT20_2025
 3. Збілдіть Docker образи та запустіть їх:
 docker-compose up -d --build
 
-4. Запустіть міграції:
+4. Запустіть міграції та генерацію ключа безпеки:
+docker-compose exec backend-app php artisan key:generate
 docker-compose exec backend-app php artisan migrate:fresh
 
 
