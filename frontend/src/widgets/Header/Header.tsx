@@ -66,7 +66,7 @@ export const Header = () => {
                 Sign in
               </Button>
               <Button component={Link} to="/sing-up" color="inherit">
-                Sign out
+                Sign up
               </Button>
             </>
           )}
