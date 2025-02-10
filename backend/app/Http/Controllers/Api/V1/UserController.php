@@ -7,14 +7,17 @@ use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Handlers\User\UpdateAvatarHandler;
+use App\Http\Requests\Api\V1\User\UpdateAvatarRequest;
 
 class UserController extends Controller
 {
     public function __construct(
-        private readonly UserRepository $userRepository
+        private readonly UserRepository $userRepository,
+        private readonly UpdateAvatarHandler $updateAvatarHandler
     ) {}
 
-    public function index(): JsonResponse
+    public function showAll(): JsonResponse
     {
         return response()->json([
             'data' => $this->userRepository->getAll()
@@ -70,5 +73,26 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User deleted successfully'
         ]);
+    }
+
+    public function updateAvatar(UpdateAvatarRequest $request): JsonResponse
+    {
+        try {
+            $this->updateAvatarHandler->handle(
+                $request->user(),
+                $request->input('avatar')
+            );
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Avatar updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update avatar',
+                'details' => $e->getMessage()
+            ], 400);
+        }
     }
 }
