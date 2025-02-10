@@ -1,6 +1,6 @@
 import { Typography, Box, List } from "@mui/material";
 import { TaskListItem } from "./TaskListItem";
-import { Task } from "../types";
+import { Task } from "../../../types/types";
 
 interface TasksProps {
   tasks: Task[];

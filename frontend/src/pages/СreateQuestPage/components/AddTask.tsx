@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import { MdOutlineDelete, MdTaskAlt } from "react-icons/md";
 import { useState } from "react";
-import { Task } from "../types";
-import { ToastContainer, toast } from "react-toastify";
+import { Task } from "../../../types/types";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UploadMediaButton } from "./UploadMediaButton";
 import style from "../CreateQuestPage.module.scss";
@@ -42,19 +42,16 @@ export const AddTask: React.FC<AddTaskProps> = ({
     let isValid = true;
     const newErrors = { name: "", text: "", answers: "" };
 
-    // Перевірка назви завдання
     if (!newTask.name.trim()) {
       newErrors.name = "Task name is required";
       isValid = false;
     }
 
-    // Перевірка тексту завдання
     if (!newTask.text.trim()) {
       newErrors.text = "Task text is required";
       isValid = false;
     }
 
-    // Перевірка відповідей для типу "Multiple Choice"
     if (newTask.type === "Multiple Choice") {
       if (newTask.answerOptions.length < 2) {
         newErrors.answers = "At least two answers are required";
