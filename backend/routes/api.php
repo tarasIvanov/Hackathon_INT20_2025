@@ -27,10 +27,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/user/logout', [AuthController::class, 'logout']);
 
     // User routes
-    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users', [UserController::class, 'showAll']);
     Route::get('/user', [UserController::class, 'show']);
     Route::patch('/user', [UserController::class, 'update']);
     Route::delete('/user', [UserController::class, 'destroy']);
+    Route::patch('/user/avatar', [UserController::class, 'updateAvatar']);
 });
 
 Route::get('/quest', [QuestController::class, 'index']);
