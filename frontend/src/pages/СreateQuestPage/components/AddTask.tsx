@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { MdOutlineDelete, MdTaskAlt } from "react-icons/md";
 import { useState } from "react";
-import { Task } from "../../../types/types";
+import { Task } from "../../../types";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UploadMediaButton } from "./UploadMediaButton";

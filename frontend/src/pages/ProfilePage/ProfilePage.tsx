@@ -9,7 +9,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
-import { UserProfile } from "../../types/types";
+import { UserProfile } from "../../types";
 import { MdOutlineEmail, MdDateRange } from "react-icons/md";
 import { CiImageOn } from "react-icons/ci";
 

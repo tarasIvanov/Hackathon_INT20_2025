@@ -9,7 +9,7 @@ import {
   CardMedia,
   Rating,
 } from "@mui/material";
-import { Quest } from "../../types/types";
+import { Quest } from "../../types";
 import { useNavigate } from "react-router-dom";
 
 export const HomePage = () => {
