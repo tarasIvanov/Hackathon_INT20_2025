@@ -8,19 +8,29 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    /**
+     * The list of the inputs that are never flashed to the session on validation exceptions.
+     *
+     * @var array<int, string>
+     */
     protected $dontFlash = [
         'current_password',
         'password',
         'password_confirmation',
     ];
 
+    /**
+     * Register the exception handling callbacks for the application.
+     */
     public function register(): void
     {
-        $this->renderable(function (AuthenticationException $e) {
-            return response()->json([
-                'error' => 'Unauthorized access',
-                'message' => 'You must be logged in to access this resource'
-            ], 401);
+        $this->renderable(function (AuthenticationException $e, $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'error' => 'Unauthorized',
+                    'message' => $e->getMessage() ?: 'Неаутентифікований користувач'
+                ], 401);
+            }
         });
     }
 }

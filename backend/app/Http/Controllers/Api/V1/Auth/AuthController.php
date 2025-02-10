@@ -24,6 +24,8 @@ class AuthController extends Controller
             return response()->json($result, 201);
         } catch (UserAlreadyExistsException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Registration failed:' . $e->getMessage()], 500);
         }
     }
 
@@ -34,6 +36,8 @@ class AuthController extends Controller
             return response()->json($result);
         } catch (InvalidCredentialsException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Login failed: ' . $e->getMessage()], 500);
         }
     }
 
@@ -43,7 +47,7 @@ class AuthController extends Controller
             $this->authHandler->logout($request->user()->currentAccessToken()->id);
             return response()->json(['message' => 'Successfully logged out']);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Logout failed'], 500);
+            return response()->json(['error' => 'Logout failed:' . $e->getMessage()], 500);
         }
     }
 }

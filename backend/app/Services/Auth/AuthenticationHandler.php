@@ -4,7 +4,6 @@ namespace App\Services\Auth;
 
 use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Exceptions\Auth\UserAlreadyExistsException;
-use App\Http\Resources\Api\V1\UserResource;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,7 +26,7 @@ class AuthenticationHandler
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return [
-            'user' => new UserResource($user),
+            'user' => $user,
             'token' => $token
         ];
     }
@@ -46,7 +45,7 @@ class AuthenticationHandler
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return [
-            'user' => new UserResource($user),
+            'user' => $user,
             'token' => $token
         ];
     }
