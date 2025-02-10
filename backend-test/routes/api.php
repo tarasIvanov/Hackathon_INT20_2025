@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnswerOptionController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,9 @@ Route::get('/answer_option/{answerOption}', [AnswerOptionController::class, 'sho
 Route::post('/answer_option', [AnswerOptionController::class, 'store']);
 Route::put('/answer_option/{answerOption}', [AnswerOptionController::class, 'update']);
 Route::delete('/answer_option/{answerOption}', [AnswerOptionController::class, 'destroy']);
+
+Route::get('/rating', [RatingController::class, 'index']);
+Route::get('/rating/{rating}', [RatingController::class, 'show']);
 
 
 
