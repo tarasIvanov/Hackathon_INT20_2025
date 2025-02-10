@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TaskType;
+use App\Models\AnswerOption;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -36,10 +37,10 @@ class TaskController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'quest_id' => ['required', 'integer', 'min:1', 'exists:App\Models\Quest,id'],
-            'type' => ['required', Rule::enum(TaskType::class)],
+            'has_options' => ['required', 'boolean'],
             'name' => ['required', 'string', 'max:255'],
             'question' => ['required', 'string', 'max:65535'],
-            'answer' => ['required', 'string', 'max:255'],
+            'answer' => ['string', 'max:255'],
             'time_limit' => ['required', 'integer', 'min:1', 'max:65535'],
         ]);
 
@@ -52,16 +53,9 @@ class TaskController extends Controller
             return response()->json($data, 422);
         }
         else {
-
-            $lastTaskNumber = Task::where('quest_id', $request->quest_id)
-                ->max('task_number');
-
-            $newTaskNumber = $lastTaskNumber ? $lastTaskNumber + 1 : 1;
-
             $task = new Task();
             $task->quest_id = $request->quest_id;
-            $task->task_number = $newTaskNumber;
-            $task->type = $request->type;
+            $task->has_options = $request->has_options;
             $task->name = $request->name;
             $task->question = $request->question;
             $task->answer = $request->answer;
@@ -83,9 +77,12 @@ class TaskController extends Controller
      */
     public function show(Task $task): JsonResponse
     {
+        $answerOptions = $task->answerOptions()->get();
+
         $data = [
             'status' => 200,
-            'task' => $task
+            'task' => $task,
+            'answer_options' => $answerOptions
         ];
 
 //        dd((new \App\Models\Task)->lastTaskNumber(1));
@@ -142,6 +139,22 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        $quest_id = $task->quest_id;
+        $task->delete();
+
+        // Reorder remaining tasks for this quest
+        Task::where('quest_id', $quest_id)
+            ->orderBy('task_number')
+            ->get()
+            ->each(function ($t, $index) {
+                $t->update(['task_number' => $index + 1]);
+            });
+
+        $data = [
+            'status' => 200,
+            'message' => 'Task deleted successfully'
+        ];
+
+        return response()->json($data, 200);
     }
 }

@@ -12,6 +12,14 @@ class Task extends Model
     /** @use HasFactory<\Database\Factories\TaskFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'task_number',
+    ];
+
+    public function answerOptions() {
+        return $this->hasMany(AnswerOption::class, 'task_id', 'id');
+    }
+
     protected static function boot()
     {
         parent::boot();

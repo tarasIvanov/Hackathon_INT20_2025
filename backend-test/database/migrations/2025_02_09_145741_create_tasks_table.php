@@ -19,8 +19,9 @@ return new class extends Migration
             $table->smallInteger('task_number', false, true);
             $table->string('name');
             $table->text('question');
-            $table->text('answer');
-            $table->enum('type', ['text', 'multiple-choice'])->default('text');
+            $table->text('answer')->nullable();
+            $table->boolean('has_options')->default(false);
+//            $table->enum('type', ['text', 'multiple-choice'])->default('text');
             $table->smallInteger('time_limit', false, true);
             $table->string('media')->nullable();
             $table->timestamps();

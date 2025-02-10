@@ -102,7 +102,7 @@ class QuestController extends Controller
         }
     }
 
-    public function delete(Quest $quest): JsonResponse
+    public function destroy(Quest $quest): JsonResponse
     {
         $quest->delete();
 

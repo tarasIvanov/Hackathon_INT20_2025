@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AnswerOption;
 use App\Models\Quest;
 use App\Models\Task;
 use App\Models\User;
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
 //        ]);
 
         Quest::factory(10)->create();
-        Task::factory(10)->create();
+        Task::factory(30)->create();
+        AnswerOption::factory(80)->create();
     }
 }
