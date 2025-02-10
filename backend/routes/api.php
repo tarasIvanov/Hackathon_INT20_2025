@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -12,20 +14,17 @@ use Illuminate\Support\Facades\Route;
 // Публічні маршрути
 Route::prefix('v1')->group(function () {
     // Аутентифікація
-    Route::post('/register', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'register']);
-    Route::post('/login', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'login']);
-
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 });
 
 // Захищені маршрути
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
-    // Профіль користувача
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::post('/user/logout', [AuthController::class, 'logout']);
 
-    Route::post('/logout', [\App\Http\Controllers\Api\V1\Auth\AuthController::class, 'logout']);
-
-    // Захищені ендпоінти
-//    Route::apiResource('/orders', \App\Http\Controllers\Api\V1\OrderController::class);
+    // User routes
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/user', [UserController::class, 'show']);
+    Route::patch('/user', [UserController::class, 'update']);
+    Route::delete('/user', [UserController::class, 'destroy']);
 });
