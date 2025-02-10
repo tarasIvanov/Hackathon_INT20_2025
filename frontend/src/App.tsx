@@ -8,6 +8,7 @@ import { Notification } from "./widgets/Notiflication";
 import { ThemeProvider } from "@emotion/react";
 import { Box, CssBaseline } from "@mui/material";
 import { whiteTheme } from "./themes/whiteTheme";
+import { darkTheme } from "./themes/darkTheme";
 
 function App() {
   return (
@@ -18,7 +19,11 @@ function App() {
         className="App"
       >
         <Header />
-        <Box component="main" sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }} className="App__content">
+        <Box
+          component="main"
+          sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
+          className="App__content"
+        >
           <Outlet />
         </Box>
         <Footer />
