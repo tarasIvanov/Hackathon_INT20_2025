@@ -16,6 +16,8 @@ import { Avatar, Badge, IconButton } from "@mui/material";
 import CasinoIcon from "@mui/icons-material/Casino";
 import { createAvatar } from "@dicebear/core";
 import { adventurer } from "@dicebear/collection";
+import { authRegister } from "../../api/Auth/authRegister";
+import { userUpdateAvatar } from "../../api/User/userUpdateAvatar";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -45,38 +47,64 @@ export default function SignUpPage() {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [passwordConfirmationError, setPasswordConfirmationError] =
+    React.useState(false);
+  const [
+    passwordConfirmationErrorMessage,
+    setPasswordConfirmationErrorMessage,
+  ] = React.useState("");
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState("");
-  const [avatar, setAvatar] = React.useState(newAvatar());
+  const [avatar, setAvatar] = React.useState("1");
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
     const password = document.getElementById("password") as HTMLInputElement;
+    const password_confirmation = document.getElementById(
+      "password_confirmation"
+    ) as HTMLInputElement;
     const name = document.getElementById("name") as HTMLInputElement;
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (
+      !email.value ||
+      !/\S+@\S+\.\S+/.test(email.value) ||
+      email.value.length > 255
+    ) {
       setEmailError(true);
-      setEmailErrorMessage("Please enter a valid email address.");
+      setEmailErrorMessage(
+        "Please enter a valid email address. It must contain the @ sign and no more than 255 characters"
+      );
       isValid = false;
     } else {
       setEmailError(false);
       setEmailErrorMessage("");
     }
 
-    if (!password.value || password.value.length < 6) {
+    if (!password.value || password.value.length < 8) {
       setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
+      setPasswordErrorMessage("Password must be at least 8 characters long.");
       isValid = false;
     } else {
       setPasswordError(false);
       setPasswordErrorMessage("");
     }
 
-    if (!name.value || name.value.length < 1) {
+    if (password.value !== password_confirmation.value) {
+      setPasswordConfirmationError(true);
+      setPasswordConfirmationErrorMessage("Passwords do not match");
+      isValid = false;
+    } else {
+      setPasswordConfirmationError(false);
+      setPasswordConfirmationErrorMessage("");
+    }
+
+    if (!name.value || name.value.length < 1 || name.value.length > 255) {
       setNameError(true);
-      setNameErrorMessage("Name is required.");
+      setNameErrorMessage(
+        "Name is required. The name must have a minimum of 2 characters and a maximum of 255"
+      );
       isValid = false;
     } else {
       setNameError(false);
@@ -86,25 +114,26 @@ export default function SignUpPage() {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (nameError || emailError || passwordError || passwordConfirmationError) {
       return;
     }
+
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get("name"),
-      lastName: data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const name = data.get("name") as string;
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+    const password_confirmation = data.get("password_confirmation") as string;
+
+    authRegister(name, email, password, password_confirmation).then(() =>
+      userUpdateAvatar(avatar)
+    );
   };
 
   function newAvatar() {
-    return createAvatar(adventurer, {
-
-      seed: Math.random().toString(36).substr(2, 9),
-    }).toDataUri();
+    setAvatar(Math.random().toString(36).substr(2, 9));
   }
 
   return (
@@ -114,7 +143,11 @@ export default function SignUpPage() {
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)", textAlign: "center"}}
+            sx={{
+              width: "100%",
+              fontSize: "clamp(2rem, 10vw, 2.15rem)",
+              textAlign: "center",
+            }}
           >
             Sign up
           </Typography>
@@ -132,7 +165,7 @@ export default function SignUpPage() {
               anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               badgeContent={
                 <IconButton
-                  onClick={() => setAvatar(newAvatar())}
+                  onClick={() => newAvatar()}
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -154,8 +187,10 @@ export default function SignUpPage() {
             >
               <Avatar
                 alt="Profile avatar"
-                src={avatar}
-                sx={{ width: 120, height: 120, p: 2}}
+                src={createAvatar(adventurer, {
+                  seed: avatar,
+                }).toDataUri()}
+                sx={{ width: 120, height: 120, p: 2 }}
               />
             </Badge>
           </Box>
@@ -208,6 +243,24 @@ export default function SignUpPage() {
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 color={passwordError ? "error" : "primary"}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="password_confirmation">
+                Confirm your password
+              </FormLabel>
+              <TextField
+                required
+                fullWidth
+                name="password_confirmation"
+                placeholder="••••••"
+                type="password"
+                id="password_confirmation"
+                autoComplete="new-password"
+                variant="outlined"
+                error={passwordConfirmationError}
+                helperText={passwordConfirmationErrorMessage}
+                color={passwordConfirmationError ? "error" : "primary"}
               />
             </FormControl>
             <Button
