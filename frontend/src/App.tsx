@@ -4,13 +4,13 @@ import { Outlet } from "react-router";
 
 import { Header } from "./widgets/Header";
 import { Footer } from "./widgets/Footer";
-import { Notification } from "./widgets/Notiflication";
 import { ThemeProvider } from "@emotion/react";
 import { Box, CssBaseline } from "@mui/material";
 import { whiteTheme } from "./themes/whiteTheme";
-import { darkTheme } from "./themes/darkTheme";
+import { ToastContainer } from "react-toastify";
 
 function App() {
+
   return (
     <ThemeProvider theme={whiteTheme}>
       <CssBaseline />
@@ -18,16 +18,27 @@ function App() {
         sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
         className="App"
       >
-        <Header />
+        <Header/>
         <Box
           component="main"
           sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
           className="App__content"
         >
-          <Outlet />
+          <Outlet/>
         </Box>
         <Footer />
-        <Notification />
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </Box>
     </ThemeProvider>
   );

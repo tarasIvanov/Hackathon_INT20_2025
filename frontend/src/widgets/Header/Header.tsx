@@ -3,32 +3,35 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import { FormControlLabel, FormGroup, Switch } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
-import React from "react";
 import { Link } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { userGet } from "../../api/User/userGet";
+import { Avatar } from "@mui/material";
+import { createAvatar } from "@dicebear/core";
+import { adventurer } from "@dicebear/collection";
+import { User } from "@/Types/User";
+import { AccountCircle } from "@mui/icons-material";
 
 export const Header = () => {
-  const [auth, setAuth] = React.useState(true);
+  const [user, setUser] = useState<User>();
+  const avatar = useRef<string | undefined>(undefined);
+  const token = useRef(localStorage.getItem("access_token"));
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAuth(event.target.checked);
-  };
+  useEffect(() => {
+    if (token.current) {
+      userGet(token.current).then((user) => {
+        if (user) {
+          setUser(user);
+          avatar.current = createAvatar(adventurer, {
+            seed: user.avatar || undefined,
+          }).toDataUri();
+        }
+      });
+    }
+  }, [token]);
 
   return (
     <Box sx={{ flexGrow: 1, mb: 4 }}>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={auth}
-              onChange={handleChange}
-              aria-label="login switch"
-            />
-          }
-          label={auth ? "Logout" : "Login"}
-        />
-      </FormGroup>
       <AppBar position="static">
         <Toolbar>
           <Box sx={{ flexGrow: 1 }}>
@@ -46,7 +49,7 @@ export const Header = () => {
             </Button>
           </Box>
 
-          {auth ? (
+          {user ? (
             <div>
               <IconButton
                 component={Link}
@@ -56,8 +59,17 @@ export const Header = () => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 color="inherit"
+                sx={{ width: 24, height: 24, p: 2 }}
               >
-                <AccountCircle />
+                {avatar.current ? (
+                  <Avatar
+                    alt="Profile avatar"
+                    src={avatar.current}
+                    sx={{ backgroundColor: "#FFB74D" }}
+                  />
+                ) : (
+                  <AccountCircle />
+                )}
               </IconButton>
             </div>
           ) : (

@@ -16,6 +16,7 @@ import { styled } from "@mui/material/styles";
 import { GoogleIcon } from "../../components/CustomIcons";
 import ForgotPassword from "../../components/ForgotPassword";
 import { NavLink } from "react-router";
+import { authLogin } from "../../api/Auth/authLogin";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -55,16 +56,18 @@ export default function SignInPage() {
     setOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (emailError || passwordError) {
-      event.preventDefault();
       return;
     }
+
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+
+    authLogin(email, password);
   };
 
   const validateInputs = () => {
