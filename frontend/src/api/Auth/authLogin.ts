@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 export async function authLogin(email: string, password: string) {
   try {
-    const response = await api.post("/login", {
+    const response = await api.post("/v1/login", {
       email,
       password,
     });

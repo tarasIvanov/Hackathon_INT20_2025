@@ -11,7 +11,7 @@ export async function userUpdateAvatar(avatar: string): Promise<boolean> {
 
   try {
     await api.patch(
-      "/user/avatar",
+      "/v1/user/avatar",
       {
         avatar,
       },

@@ -5,7 +5,7 @@ import { User } from "@/Types/User";
 
 export async function userGet(token: string): Promise<User | undefined> {
   try {
-    const response = await api.get("/user", {
+    const response = await api.get("/v1/user", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
