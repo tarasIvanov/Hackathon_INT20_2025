@@ -3,7 +3,7 @@
 use App\Http\Controllers\AnswerOptionController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
-use App\Http\Controllers\QuestController;
+use App\Http\Controllers\Api\V1\QuestController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
@@ -32,13 +32,22 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::patch('/user', [UserController::class, 'update']);
     Route::delete('/user', [UserController::class, 'destroy']);
     Route::patch('/user/avatar', [UserController::class, 'updateAvatar']);
+    Route::get('/user/quests', [QuestController::class, 'getUserQuests']);
+
+    // Quest Management Routes
+    Route::prefix('quests')->group(function () {
+        Route::get('/', [QuestController::class, 'index']);
+        Route::post('/', [QuestController::class, 'store']);
+        Route::get('/{id}', [QuestController::class, 'show']);
+        Route::delete('/{id}', [QuestController::class, 'destroy'])->middleware('quest.owner');
+    });
 });
 
-Route::get('/quest', [QuestController::class, 'index']);
-Route::get('/quest/{quest}', [QuestController::class, 'show']);
-Route::post('/quest', [QuestController::class, 'store']);
-Route::put('/quest/{quest}', [QuestController::class, 'update']);
-Route::delete('/quest/{quest}', [QuestController::class, 'destroy']);
+// Route::get('/quest', [QuestController::class, 'index']);
+// Route::get('/quest/{quest}', [QuestController::class, 'show']);
+// Route::post('/quest', [QuestController::class, 'store']);
+// Route::put('/quest/{quest}', [QuestController::class, 'update']);
+// Route::delete('/quest/{quest}', [QuestController::class, 'destroy']);
 
 
 Route::get('/task', [TaskController::class, 'index']);

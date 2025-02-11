@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AnswerOption extends Model
 {
@@ -11,19 +14,17 @@ class AnswerOption extends Model
     use HasFactory;
 
     protected $fillable = [
-        'option_number'
+        'task_id',
+        'name',
+        'is_correct',
     ];
 
-    protected static function boot()
+    protected $casts = [
+        'is_correct' => 'boolean',
+    ];
+
+    public function task(): BelongsTo
     {
-        parent::boot();
-
-        static::creating(function ($answerOption) {
-            // Get the last task number for this quest_id
-            $lastOptionNumber = self::where('task_id', $answerOption->task_id)->max('option_number') ?? 0;
-
-            // Increment for consistency
-            $answerOption->option_number = $lastOptionNumber + 1;
-        });
+        return $this->belongsTo(Task::class);
     }
 }

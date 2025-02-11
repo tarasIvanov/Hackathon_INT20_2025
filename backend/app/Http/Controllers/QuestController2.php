@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use Illuminate\Http\JsonResponse;
-
 use App\Models\Quest;
-
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 
-
-class QuestController extends Controller
+class QuestController2 extends Controller
 {
     public function index(): JsonResponse
     {
