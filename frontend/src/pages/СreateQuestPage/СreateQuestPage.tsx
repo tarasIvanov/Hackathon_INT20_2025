@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Task, Quest } from "./types";
+import { Task, Quest } from "../../types/types";
 import { AddTask } from "./components/AddTask";
 import { MediaPreview } from "./components/MediaPreview";
 import { TasksContainer } from "./components/TasksContainer";

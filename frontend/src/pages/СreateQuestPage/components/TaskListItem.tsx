@@ -1,7 +1,7 @@
 import { Box, ListItem, ListItemText, Typography } from "@mui/material";
 import { MdOutlineDelete } from "react-icons/md";
 import { MediaPreview } from "./MediaPreview";
-import { Task } from "../types";
+import { Task } from "../../../types/types";
 
 interface TaskItemProps {
   task: Task;

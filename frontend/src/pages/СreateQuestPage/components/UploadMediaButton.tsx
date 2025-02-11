@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 
 interface UploadMediaButtonProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  buttonText: string; // Додано пропс для тексту кнопки
+  buttonText: string;
 }
 
 export const UploadMediaButton = ({
