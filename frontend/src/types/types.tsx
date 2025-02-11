@@ -1,10 +1,11 @@
+// я вже довбав думати як той camelCase на snake міняти
 export interface Task {
   name: string;
-  text: string;
+  description: string;
   type: string;
-  answerOptions: {
-    text: string;
-    isCorrect: boolean;
+  answer_options: {
+    name: string;
+    is_сorrect: boolean;
   }[];
   media: File | null;
 }
@@ -16,19 +17,17 @@ export interface Quest {
   timeLimit: number;
   tasks: Task[];
   image: File | null;
-  authorId: number;
   rating: number;
   reviewCount: number;
 }
 
 export interface UserProfile {
-  id: string;
+  avatarUrl: string;
   name: string;
-  email: string;
-  avatarUrl?: string;
+  userEmail: string; // на просто email вимахується
   createdAt: Date;
-  isVerified: boolean;
-  userRating: number;
   createdQuests: Quest[];
   completedQuests: Quest[];
+  userRating: number;
+  reviewCount: number;
 }

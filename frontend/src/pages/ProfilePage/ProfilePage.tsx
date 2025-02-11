@@ -7,67 +7,28 @@ import {
   Paper,
   Rating,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import { UserProfile } from "../../types";
 import { MdOutlineEmail, MdDateRange } from "react-icons/md";
 import { CiImageOn } from "react-icons/ci";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axiosConfig from "../../api/axiosConfig";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { createAvatar } from "@dicebear/core";
+import { adventurer } from "@dicebear/collection";
+import { userGet } from "../../api/User/userGet";
 
 export const ProfilePage = () => {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-
-  const userProfile: UserProfile = {
-    id: "12345",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatarUrl: "https://example.com/avatar.jpg",
-    userRating: 4.3,
-    createdAt: new Date(),
-    isVerified: true,
-    createdQuests: [
-      {
-        id: 1,
-        name: "Math Challenge",
-        description: "Solve these math problems in 30 minutes.",
-        timeLimit: 30,
-        tasks: [],
-        image: null,
-        authorId: 12345,
-        rating: 4.5,
-        reviewCount: 10,
-      },
-    ],
-    completedQuests: [
-      {
-        id: 2,
-        name: "History Quiz",
-        description: "Test your knowledge of world history.",
-        timeLimit: 20,
-        tasks: [],
-        image: null,
-        authorId: 67890,
-        rating: 4.7,
-        reviewCount: 15,
-      },
-      {
-        id: 3,
-        name: "Math Quiz",
-        description: "Test your knowledge of basic algebta.",
-        timeLimit: 20,
-        tasks: [],
-        image: null,
-        authorId: 67890,
-        rating: 4.8,
-        reviewCount: 18,
-      },
-    ],
-  };
+  const location = useLocation();
 
   const handleLogout = () => {
     console.log("User logged out");
+    localStorage.removeItem("access_token");
+    navigate("/");
   };
 
   useEffect(() => {
@@ -76,18 +37,42 @@ export const ProfilePage = () => {
 
       if (!token) {
         navigate("/sign-in", { state: { from: location.pathname } });
-      } else {
-        try {
-          const response = await axiosConfig.get("user");
-          console.log(response.data);
-        } catch (error) {
-          console.log("Error fetching user data:", error);
-        }
+        return;
+      }
+
+      try {
+        const response = await userGet(token);
+        console.log(response);
+        setUserProfile({
+          avatarUrl: createAvatar(adventurer, {
+            seed: response.avatar,
+          }).toDataUri(),
+
+          name: response.name,
+          userEmail: response.email,
+          createdAt: new Date(response.createdAt),
+          createdQuests: [],
+          completedQuests: [],
+          userRating: 0,
+          reviewCount: 0,
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchUserData();
   }, [navigate, location]);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
 
   return (
     <Container
@@ -109,6 +94,7 @@ export const ProfilePage = () => {
       >
         User profile
       </Typography>
+      <Divider sx={{ mb: 3, mx: 3, borderColor: "rgb(66, 66, 66)" }} />
       <Box
         sx={{
           display: "flex",
@@ -119,8 +105,7 @@ export const ProfilePage = () => {
       >
         {/* personal info */}
         <Box>
-          <Box></Box>
-          {/* avatar + + name  rating  */}
+          {/* avatar + name + rating */}
           <Box
             sx={{
               display: "flex",
@@ -133,7 +118,7 @@ export const ProfilePage = () => {
             <Avatar
               alt={userProfile.name}
               src={userProfile.avatarUrl}
-              sx={{ width: 120, height: 120 }}
+              sx={{ width: 120, height: 120, backgroundColor: "#FFB74D" }}
             />
 
             <Box>
@@ -150,7 +135,8 @@ export const ProfilePage = () => {
               />
 
               <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                {userProfile.userRating + " based on 121 reviews"}
+                {userProfile.userRating +
+                  ` based on ${userProfile.reviewCount} reviews`}
               </Typography>
             </Box>
           </Box>
@@ -160,7 +146,7 @@ export const ProfilePage = () => {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
               <MdOutlineEmail fontSize="32px" />
               <Typography variant="body1" color="textSecondary">
-                {userProfile.email}
+                {userProfile.userEmail}
               </Typography>
             </Box>
 
@@ -183,6 +169,11 @@ export const ProfilePage = () => {
           <Typography variant="h5" gutterBottom>
             Created Quests
           </Typography>
+          {userProfile.createdQuests.length == 0 && (
+            <Typography variant="body1" color="textSecondary">
+              Missing
+            </Typography>
+          )}
           {userProfile.createdQuests.map((quest) => (
             <Paper
               key={quest.id}
@@ -213,6 +204,11 @@ export const ProfilePage = () => {
           <Typography variant="h5" gutterBottom>
             Completed Quests
           </Typography>
+          {userProfile.completedQuests.length == 0 && (
+            <Typography variant="body1" color="textSecondary">
+              Missing
+            </Typography>
+          )}
           {userProfile.completedQuests.map((quest) => (
             <Paper
               key={quest.id}

@@ -1,5 +1,4 @@
-import style from "./CreateQuestPage.module.scss";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   TextField,
   Typography,
@@ -10,31 +9,29 @@ import {
 } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { IoIosSave } from "react-icons/io";
 import { Task, Quest } from "../../types/types";
 import { AddTask } from "./components/AddTask";
 import { MediaPreview } from "./components/MediaPreview";
 import { TasksContainer } from "./components/TasksContainer";
-import { IoIosSave } from "react-icons/io";
 import { UploadMediaButton } from "./components/UploadMediaButton";
-import axiosConfig from "../../api/axiosConfig";
-import { useEffect } from "react";
+import api from "../../api/api";
 import { useNavigate, useLocation } from "react-router-dom";
+import style from "./CreateQuestPage.module.scss";
 
-export const СreateQuestPage = () => {
+export const CreateQuestPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) {
-      navigate("/sing-in", { state: { from: location.pathname } });
-    }
+    if (!token) navigate("/sign-in", { state: { from: location.pathname } });
   }, [navigate, location]);
 
   const [quest, setQuest] = useState<Partial<Quest>>({
     name: "",
     description: "",
-    timeLimit: 5,
+    time_limit: 5, // змінив timeLimit на time_limit
     tasks: [],
     image: null,
   });
@@ -42,135 +39,123 @@ export const СreateQuestPage = () => {
   const [errors, setErrors] = useState({
     name: "",
     description: "",
-    timeLimit: "",
+    time_limit: "", // змінив timeLimit на time_limit
   });
 
   const [addingNewTask, setAddingNewTask] = useState(false);
   const [newTask, setNewTask] = useState<Task>({
     name: "",
-    text: "",
+    description: "",
     type: "Multiple Choice",
-    answerOptions: [],
+    answer_options: [], // змінив answerOptions на answer_options
     media: null,
   });
 
-  const uploadQuestImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    setQuest((prev) => ({
-      ...prev,
-      image: file,
-    }));
-  };
+  const handleQuestChange = (field: keyof Quest, value: string | number) =>
+    setQuest((prev) => ({ ...prev, [field]: value }));
 
-  const handleQuestChange = (field: keyof Quest, value: string | number) => {
-    setQuest((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const handleTaskChange = (field: keyof Task, value: string | any) =>
+    setNewTask((prev) => ({ ...prev, [field]: value }));
+
+  const uploadQuestImage = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setQuest((prev) => ({ ...prev, image: e.target.files?.[0] || null }));
 
   const validateForm = () => {
     let isValid = true;
-    const newErrors = { name: "", description: "", timeLimit: "" };
+    const newErrors = { name: "", description: "", time_limit: "" }; // змінив timeLimit на time_limit
 
     if (!quest.name.trim()) {
       newErrors.name = "Quest name is required";
       isValid = false;
-    } else if (quest.name.trim().length < 5) {
-      newErrors.name = "Quest name must be at least 5 characters long";
+    }
+    if (quest.name.trim().length < 5) {
+      newErrors.name = "Quest name must be at least 5 characters";
       isValid = false;
     }
-
     if (!quest.description.trim()) {
-      newErrors.description = "Quest description is required";
-      isValid = false;
-    } else if (quest.description.trim().length < 10) {
-      newErrors.description =
-        "Quest description must be at least 10 characters long";
+      newErrors.description = "Description is required";
       isValid = false;
     }
-
-    if (!quest.timeLimit) {
-      newErrors.timeLimit = "Time limit is required";
-      isValid = false;
-    } else if (+quest.timeLimit <= 0) {
-      newErrors.timeLimit = "Time limit must be greater than 0";
-      isValid = false;
-    } else if (+quest.timeLimit > 1440) {
-      newErrors.timeLimit = "Time limit cannot exceed 24 hours (1440 minutes)";
+    if (quest.description.trim().length < 10) {
+      newErrors.description = "Description must be at least 10 characters";
       isValid = false;
     }
-
+    if (!quest.time_limit) {
+      // змінив timeLimit на time_limit
+      newErrors.time_limit = "Time limit is required";
+      isValid = false;
+    }
+    if (+quest.time_limit <= 0) {
+      // змінив timeLimit на time_limit
+      newErrors.time_limit = "Time limit must be greater than 0";
+      isValid = false;
+    }
+    if (+quest.time_limit > 1440) {
+      // змінив timeLimit на time_limit
+      newErrors.time_limit = "Time limit cannot exceed 24 hours";
+      isValid = false;
+    }
     setErrors(newErrors);
     return isValid;
+  };
+
+  const handleSaveQuestClick = async () => {
+    if (!validateForm())
+      return toast.error("Please correct the errors before saving");
+    if (quest.tasks.length === 0)
+      return toast.error("Quest must have at least one task!");
+
+    try {
+      // Створення нового масиву tasks без полів media та type бо на бекенді його немає
+      const tasksWithoutMediaAndType = quest.tasks.map(
+        ({ media, type, ...task }) => task
+      );
+
+      const questData = {
+        name: quest.name,
+        description: quest.description,
+        time_limit: quest.time_limit, // змінив timeLimit на time_limit
+        tasks: tasksWithoutMediaAndType,
+      };
+      console.log(questData);
+
+      const response = await api.post("v1/quests", questData);
+      console.log(response);
+      toast.success("Quest saved successfully!");
+    } catch (error) {
+      toast.error(
+        "Error saving quest: " +
+          (error?.response?.data?.message || error.message)
+      );
+    }
   };
 
   const handleSaveTaskClick = () => {
     setQuest((prev) => ({
       ...prev,
-      tasks: [...prev.tasks, newTask],
+      tasks: [...prev.tasks, { ...newTask, points: 10 }],
     }));
-
     setNewTask({
       name: "",
-      text: "",
+      description: "",
       type: "Multiple Choice",
-      answerOptions: [],
+      answer_options: [], // змінив answerOptions на answer_options
       media: null,
     });
-
     setAddingNewTask(false);
-  };
-
-  const handleDeleteTask = (index: number) => {
-    setQuest((prev) => ({
-      ...prev,
-      tasks: prev.tasks.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleCancelCreatingTask = () => {
-    setAddingNewTask(false);
-  };
-
-  const handleSaveQuestClick = async () => {
-    if (!validateForm()) {
-      toast.error("Please correct the errors before saving");
-      return;
-    }
-
-    if (quest.tasks.length === 0) {
-      toast.error("The quest must have at least one task!");
-      return;
-    }
-
-    try {
-      const response = await axiosConfig.post("quests", {
-        quest,
-      });
-      toast.success("Quest saved successfully!");
-    } catch (error) {
-      toast.error(
-        "Error saving quest: " +
-          ((error as any).response?.data?.message || (error as any).message)
-      );
-    }
-    console.log("Saving quest:", quest);
   };
 
   return (
     <>
       <Box className={style.addingTaskBlock}>
-        <Box>
-          <Typography variant="h4" sx={{ mb: 2 }}>
-            Creating a new quest
-          </Typography>
-        </Box>
+        <Typography variant="h4" sx={{ mb: 2 }}>
+          Creating a new quest
+        </Typography>
 
         <Box sx={{ width: "100%", boxSizing: "border-box" }}>
-          <form className={style.questInputsContainer}>
+          <Box className={style.questInputsContainer}>
             <FormControl>
-              <FormLabel sx={{ textAlign: "left" }}>Quest name</FormLabel>
+              <FormLabel>Quest name</FormLabel>
               <TextField
                 name="name"
                 placeholder="Special math quest..."
@@ -181,11 +166,8 @@ export const СreateQuestPage = () => {
                 fullWidth
               />
             </FormControl>
-
             <FormControl>
-              <FormLabel sx={{ textAlign: "left" }}>
-                Quest description
-              </FormLabel>
+              <FormLabel>Quest description</FormLabel>
               <TextField
                 name="description"
                 placeholder="Very long and useful description..."
@@ -200,46 +182,51 @@ export const СreateQuestPage = () => {
                 fullWidth
               />
             </FormControl>
-
             {quest.image && (
               <MediaPreview
                 media={quest.image}
                 onDelete={() => setQuest({ ...quest, image: null })}
               />
             )}
-
             <UploadMediaButton
               buttonText="Add quest image"
               onChange={uploadQuestImage}
-            ></UploadMediaButton>
-
+            />
             <FormControl>
-              <FormLabel sx={{ textAlign: "left" }}>Time limit (min)</FormLabel>
+              <FormLabel>Time limit (min)</FormLabel>
               <TextField
                 placeholder="60"
                 name="timeLimit"
                 type="number"
-                value={quest.timeLimit}
-                onChange={(e) => handleQuestChange("timeLimit", e.target.value)}
-                error={!!errors.timeLimit}
-                helperText={errors.timeLimit}
+                value={quest.time_limit} // змінив timeLimit на time_limit
+                onChange={(e) =>
+                  handleQuestChange("time_limit", e.target.value)
+                } // змінив timeLimit на time_limit
+                error={!!errors.time_limit} // змінив timeLimit на time_limit
+                helperText={errors.time_limit} // змінив timeLimit на time_limit
                 fullWidth
                 required
               />
             </FormControl>
-          </form>
-
-          {quest.tasks.length > 0 && (
-            <TasksContainer tasks={quest.tasks} onDelete={handleDeleteTask} />
-          )}
+          </Box>
         </Box>
 
+        {quest.tasks.length > 0 && (
+          <TasksContainer
+            tasks={quest.tasks}
+            onDelete={(index) =>
+              setQuest((prev) => ({
+                ...prev,
+                tasks: prev.tasks.filter((_, i) => i !== index),
+              }))
+            }
+          />
+        )}
         {!addingNewTask && (
           <Box className={style.questButtonsContainer}>
             <Button variant="contained" onClick={() => setAddingNewTask(true)}>
               Add task
             </Button>
-
             <Button
               variant="contained"
               color="error"
@@ -250,35 +237,19 @@ export const СreateQuestPage = () => {
             </Button>
           </Box>
         )}
-
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
       </Box>
+      <ToastContainer position="top-right" autoClose={3000} />
 
       {addingNewTask && (
         <AddTask
           newTask={newTask}
           setNewTask={setNewTask}
-          handleTaskChange={(field, value) =>
-            setNewTask((prev) => ({ ...prev, [field]: value }))
+          handleTaskChange={handleTaskChange}
+          handleFileUpload={(e) =>
+            handleTaskChange("media", e.target.files?.[0])
           }
-          handleFileUpload={(event) => {
-            const file = event.target.files?.[0] || null;
-            if (file) {
-              setNewTask((prev) => ({ ...prev, media: file }));
-            }
-          }}
           handleSaveTaskClick={handleSaveTaskClick}
-          handleCancelCreatingTask={handleCancelCreatingTask}
+          handleCancelCreatingTask={() => setAddingNewTask(false)}
         />
       )}
     </>

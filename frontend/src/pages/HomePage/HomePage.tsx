@@ -4,15 +4,12 @@ import {
   Typography,
   Button,
   Container,
-  Card,
-  CardContent,
-  CardMedia,
-  Rating,
   CircularProgress,
 } from "@mui/material";
 import { Quest } from "../../types";
 import { useNavigate } from "react-router-dom";
-import axiosConfig from "../../api/axiosConfig";
+import api from "../../api/api";
+import { QuestCard } from "../../components/QuestCard";
 
 export const HomePage = () => {
   const [quests, setQuests] = useState<Quest[]>([]);
@@ -28,12 +25,13 @@ export const HomePage = () => {
   useEffect(() => {
     const fetchQuests = async () => {
       try {
-        const response = await axiosConfig.get("/quests");
-        if (response.data && response.data.length > 0) {
-          setQuests(response.data);
-        } else {
-          setError("No quests available at the moment.");
-          console.log(response.data);
+        const response = await api.get("v1/quests");
+        if (response.data) {
+          setQuests(response.data.data);
+
+          if (response.data.data.length === 0) {
+            setError("No quests available at the moment.");
+          }
         }
       } catch (error) {
         setError("Error fetching quests. Please try again later.");
@@ -88,28 +86,7 @@ export const HomePage = () => {
           }}
         >
           {quests.map((quest) => (
-            <Card key={quest.id} sx={{ width: 300 }}>
-              <CardMedia
-                component="img"
-                height="140"
-                image={
-                  quest.image
-                    ? URL.createObjectURL(quest.image)
-                    : "https://picsum.photos/300/200"
-                }
-                alt={quest.name}
-              />
-              <CardContent>
-                <Typography variant="h6">{quest.name}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {quest.description}
-                </Typography>
-                <Rating value={quest.rating} precision={0.1} readOnly />
-                <Typography variant="body2">
-                  {quest.reviewCount} reviews
-                </Typography>
-              </CardContent>
-            </Card>
+            <QuestCard questObj={quest}></QuestCard>
           ))}
         </Box>
       )}
