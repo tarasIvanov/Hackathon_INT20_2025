@@ -12,8 +12,13 @@ import { Logout } from "@mui/icons-material";
 import { UserProfile } from "../../types";
 import { MdOutlineEmail, MdDateRange } from "react-icons/md";
 import { CiImageOn } from "react-icons/ci";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosConfig from "../../api/axiosConfig";
 
 export const ProfilePage = () => {
+  const navigate = useNavigate();
+
   const userProfile: UserProfile = {
     id: "12345",
     name: "John Doe",
@@ -64,6 +69,25 @@ export const ProfilePage = () => {
   const handleLogout = () => {
     console.log("User logged out");
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        navigate("/sign-in", { state: { from: location.pathname } });
+      } else {
+        try {
+          const response = await axiosConfig.get("user");
+          console.log(response.data);
+        } catch (error) {
+          console.log("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [navigate, location]);
 
   return (
     <Container

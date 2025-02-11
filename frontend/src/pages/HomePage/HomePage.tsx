@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -8,52 +8,54 @@ import {
   CardContent,
   CardMedia,
   Rating,
+  CircularProgress,
 } from "@mui/material";
 import { Quest } from "../../types";
 import { useNavigate } from "react-router-dom";
+import axiosConfig from "../../api/axiosConfig";
 
 export const HomePage = () => {
-  const [quests, setQuests] = useState<Quest[]>([
-    {
-      id: 1,
-      name: "Secrets of the Old Town",
-      description: "Uncover the mysteries of the old town and find treasures!",
-      timeLimit: 60,
-      tasks: [],
-      image: null,
-      authorId: 101,
-      rating: 4.7,
-      reviewCount: 134,
-    },
-    {
-      id: 2,
-      name: "The Lost Artifact",
-      description: "Help find the lost artifact of an ancient civilization.",
-      timeLimit: 45,
-      tasks: [],
-      image: null,
-      authorId: 102,
-      rating: 4.9,
-      reviewCount: 89,
-    },
-    {
-      id: 3,
-      name: "Escape the Labyrinth",
-      description: "Find your way out of a confusing labyrinth!",
-      timeLimit: 30,
-      tasks: [],
-      image: null,
-      authorId: 103,
-      rating: 4.5,
-      reviewCount: 210,
-    },
-  ]);
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
   const handleCreateQuest = () => {
     navigate("/create");
   };
+
+  useEffect(() => {
+    const fetchQuests = async () => {
+      try {
+        const response = await axiosConfig.get("/quests");
+        if (response.data && response.data.length > 0) {
+          setQuests(response.data);
+        } else {
+          setError("No quests available at the moment.");
+          console.log(response.data);
+        }
+      } catch (error) {
+        setError("Error fetching quests. Please try again later.");
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuests();
+  }, []);
+
+  if (loading) {
+    return (
+      <Container sx={{ textAlign: "center", marginTop: 5 }}>
+        <CircularProgress />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Loading quests...
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -68,40 +70,49 @@ export const HomePage = () => {
         Popular Quests
       </Typography>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: { xs: "center", md: "flex-start" },
-          gap: 3,
-          mt: 5,
-        }}
-      >
-        {quests.map((quest) => (
-          <Card key={quest.id} sx={{ width: 300 }}>
-            <CardMedia
-              component="img"
-              height="140"
-              image={
-                quest.image
-                  ? URL.createObjectURL(quest.image)
-                  : "https://picsum.photos/300/200"
-              }
-              alt={quest.name}
-            />
-            <CardContent>
-              <Typography variant="h6">{quest.name}</Typography>
-              <Typography variant="body2" color="textSecondary">
-                {quest.description}
-              </Typography>
-              <Rating value={quest.rating} precision={0.1} readOnly />
-              <Typography variant="body2">
-                {quest.reviewCount} reviews
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+      {error ? (
+        <Typography
+          variant="h6"
+          sx={{ mt: 3, color: "red", textAlign: "center" }}
+        >
+          {error}
+        </Typography>
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: { xs: "center", md: "flex-start" },
+            gap: 3,
+            mt: 5,
+          }}
+        >
+          {quests.map((quest) => (
+            <Card key={quest.id} sx={{ width: 300 }}>
+              <CardMedia
+                component="img"
+                height="140"
+                image={
+                  quest.image
+                    ? URL.createObjectURL(quest.image)
+                    : "https://picsum.photos/300/200"
+                }
+                alt={quest.name}
+              />
+              <CardContent>
+                <Typography variant="h6">{quest.name}</Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {quest.description}
+                </Typography>
+                <Rating value={quest.rating} precision={0.1} readOnly />
+                <Typography variant="body2">
+                  {quest.reviewCount} reviews
+                </Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      )}
 
       <Box
         sx={{

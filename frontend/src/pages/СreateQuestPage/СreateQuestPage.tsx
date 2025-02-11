@@ -16,9 +16,22 @@ import { MediaPreview } from "./components/MediaPreview";
 import { TasksContainer } from "./components/TasksContainer";
 import { IoIosSave } from "react-icons/io";
 import { UploadMediaButton } from "./components/UploadMediaButton";
+import axiosConfig from "../../api/axiosConfig";
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const СreateQuestPage = () => {
-  const [quest, setQuest] = useState<Quest>({
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      navigate("/sing-in", { state: { from: location.pathname } });
+    }
+  }, [navigate, location]);
+
+  const [quest, setQuest] = useState<Partial<Quest>>({
     name: "",
     description: "",
     timeLimit: 5,
@@ -120,7 +133,7 @@ export const СreateQuestPage = () => {
     setAddingNewTask(false);
   };
 
-  const handleSaveQuestClick = () => {
+  const handleSaveQuestClick = async () => {
     if (!validateForm()) {
       toast.error("Please correct the errors before saving");
       return;
@@ -131,7 +144,17 @@ export const СreateQuestPage = () => {
       return;
     }
 
-    toast.success("Quest saved successfully!");
+    try {
+      const response = await axiosConfig.post("quests", {
+        quest,
+      });
+      toast.success("Quest saved successfully!");
+    } catch (error) {
+      toast.error(
+        "Error saving quest: " +
+          ((error as any).response?.data?.message || (error as any).message)
+      );
+    }
     console.log("Saving quest:", quest);
   };
 
