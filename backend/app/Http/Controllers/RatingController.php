@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Quest;
 use App\Models\Rating;
+use App\Models\User;
 use App\Http\Requests\StoreRatingRequest;
 use App\Http\Requests\UpdateRatingRequest;
 use http\Env\Response;
@@ -124,6 +126,26 @@ class RatingController extends Controller
         $data = [
             'status' => 200,
             'message' => 'Rating deleted successfully'
+        ];
+
+        return response()->json($data, 200);
+    }
+
+    public function getUserRatings(User $user) {
+        $ratings = $user->ratings()->get();
+        $data = [
+            'status' => 200,
+            'ratings' => $ratings
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function getQuestRatings(Quest $quest) {
+        $ratings = $quest->ratings()->get();
+
+        $data = [
+            'status' => 200,
+            'ratings' => $ratings
         ];
 
         return response()->json($data, 200);

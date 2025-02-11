@@ -73,3 +73,6 @@ Route::get('/quest_progress', [QuestProgressController::class, 'index']);
 Route::get('/quest_progress/{questProgress}', [QuestProgressController::class, 'show']);
 Route::post('/quest_progress', [QuestProgressController::class, 'store']);
 Route::put('/quest_progress/{questProgress}', [QuestProgressController::class, 'update']);
+
+Route::get('user/{user}/ratings', [RatingController::class, 'getUserRatings']);
+Route::get('quest/{quest}/ratings', [RatingController::class, 'getQuestRatings']);
