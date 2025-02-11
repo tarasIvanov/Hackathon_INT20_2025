@@ -17,7 +17,8 @@ class AnswerOptionFactory extends Factory
      */
     public function definition(): array
     {
-        $tasks = Task::where('has_options', true)->pluck('id');
+        $tasks = Task::all()->pluck('id');
+//        $tasks = Task::where('has_options', true)->pluck('id');
 
         return [
             'task_id' => $this->faker->randomElement($tasks),

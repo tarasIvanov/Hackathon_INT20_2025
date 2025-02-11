@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\TaskType;
 use App\Models\AnswerOption;
 use App\Models\Task;
 use Illuminate\Http\Request;
