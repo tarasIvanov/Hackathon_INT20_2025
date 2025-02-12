@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   TextField,
   Typography,
@@ -11,8 +12,6 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { MdOutlineDelete, MdTaskAlt } from "react-icons/md";
-import { useState } from "react";
-import { Task } from "../../../types";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UploadMediaButton } from "./UploadMediaButton";
@@ -36,27 +35,31 @@ export const AddTask: React.FC<AddTaskProps> = ({
   handleCancelCreatingTask,
   setNewTask,
 }) => {
-  const [errors, setErrors] = useState({ name: "", text: "", answers: "" });
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+    answers: "",
+  });
 
   const validateTask = () => {
     let isValid = true;
-    const newErrors = { name: "", text: "", answers: "" };
+    const newErrors = { name: "", description: "", answers: "" };
 
     if (!newTask.name.trim()) {
       newErrors.name = "Task name is required";
       isValid = false;
     }
 
-    if (!newTask.text.trim()) {
-      newErrors.text = "Task text is required";
+    if (!newTask.description.trim()) {
+      newErrors.description = "Task description is required";
       isValid = false;
     }
 
     if (newTask.type === "Multiple Choice") {
-      if (newTask.answerOptions.length < 2) {
+      if (newTask.answer_options.length < 2) {
         newErrors.answers = "At least two answers are required";
         isValid = false;
-      } else if (!newTask.answerOptions.some((option) => option.isCorrect)) {
+      } else if (!newTask.answer_options.some((option) => option.is_correct)) {
         newErrors.answers = "At least one correct answer is required";
         isValid = false;
       }
@@ -75,18 +78,18 @@ export const AddTask: React.FC<AddTaskProps> = ({
   const handleAddAnswer = () => {
     setNewTask((prevTask) => ({
       ...prevTask,
-      answerOptions: [
-        ...prevTask.answerOptions,
-        { text: "", isCorrect: false },
+      answer_options: [
+        ...prevTask.answer_options,
+        { name: "", is_correct: false },
       ],
     }));
   };
 
-  const handleAnswerTextChange = (index: number, text: string) => {
+  const handleAnswerTextChange = (index: number, name: string) => {
     setNewTask((prevTask) => ({
       ...prevTask,
-      answerOptions: prevTask.answerOptions.map((option, i) =>
-        i === index ? { ...option, text } : option
+      answer_options: prevTask.answer_options.map((option, i) =>
+        i === index ? { ...option, name } : option
       ),
     }));
   };
@@ -95,8 +98,8 @@ export const AddTask: React.FC<AddTaskProps> = ({
     if (newTask.type === "Open Answer") return;
     setNewTask((prevTask) => ({
       ...prevTask,
-      answerOptions: prevTask.answerOptions.map((option, i) =>
-        i === index ? { ...option, isCorrect } : option
+      answer_options: prevTask.answer_options.map((option, i) =>
+        i === index ? { ...option, is_correct: isCorrect } : option
       ),
     }));
   };
@@ -140,16 +143,16 @@ export const AddTask: React.FC<AddTaskProps> = ({
         </FormControl>
 
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <FormLabel sx={{ textAlign: "left" }}>Task text</FormLabel>
+          <FormLabel sx={{ textAlign: "left" }}>Task description</FormLabel>
           <TextField
             placeholder="Calculate the expression using..."
             multiline
             rows={6}
             fullWidth
-            value={newTask.text}
-            onChange={(e) => handleTaskChange("text", e.target.value)}
-            error={!!errors.text}
-            helperText={errors.text}
+            value={newTask.description}
+            onChange={(e) => handleTaskChange("description", e.target.value)}
+            error={!!errors.description}
+            helperText={errors.description}
           />
         </FormControl>
 
@@ -206,7 +209,7 @@ export const AddTask: React.FC<AddTaskProps> = ({
           Answer Options
         </Typography>
 
-        {newTask.answerOptions.map((option, index) => (
+        {newTask.answer_options.map((option, index) => (
           <Box
             key={index}
             sx={{
@@ -219,14 +222,14 @@ export const AddTask: React.FC<AddTaskProps> = ({
             <TextField
               label={`Answer ${index + 1}`}
               sx={{ flexGrow: 1, mr: 2 }}
-              value={option.text}
+              value={option.name} // Замінив text на name
               onChange={(e) => handleAnswerTextChange(index, e.target.value)}
             />
             {newTask.type === "Multiple Choice" && (
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={option.isCorrect}
+                    checked={option.is_correct}
                     onChange={(e) =>
                       handleAnswerCorrectChange(index, e.target.checked)
                     }

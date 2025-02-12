@@ -5,17 +5,14 @@ import { User } from "@/Types/User";
 
 export async function userGet(token: string): Promise<User | undefined> {
   try {
-    const response = await api.get("/v1/user", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.get("/v1/user");
 
     return {
-      id: response.data.id,
-      name: response.data.name,
-      email: response.data.email,
-      avatar: response.data.avatar,
+      id: response.data.data.id,
+      name: response.data.data.name,
+      email: response.data.data.email,
+      avatar: response.data.data.avatar,
+      createdAt: response.data.data.created_at,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {

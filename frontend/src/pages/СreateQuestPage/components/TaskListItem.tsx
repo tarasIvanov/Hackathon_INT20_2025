@@ -57,12 +57,12 @@ export const TaskListItem: React.FC<TaskItemProps> = ({
         />
       )}
 
-      {task.answerOptions.length > 0 && (
+      {task.answer_options.length > 0 && (
         <Box sx={{ mt: 2, width: "100%" }}>
           <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
             Answer Options:
           </Typography>
-          {task.answerOptions.map((option, i) => (
+          {task.answer_options.map((option, i) => (
             <Box
               key={i}
               sx={{
@@ -75,7 +75,7 @@ export const TaskListItem: React.FC<TaskItemProps> = ({
               }}
             >
               <Typography sx={{ flexGrow: 1 }}>
-                {option.text} {option.isCorrect && "(Correct)"}
+                {option.text} {option.is_correct && "(Correct)"}
               </Typography>
             </Box>
           ))}

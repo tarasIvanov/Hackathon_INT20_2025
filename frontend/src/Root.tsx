@@ -10,7 +10,7 @@ import SingUpPage from "./pages/SingUpPage/SingUpPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { QuestPage } from "./pages/QuestPage";
 import { ProfilePage } from "./pages/ProfilePage";
-import { СreateQuestPage } from "./pages/СreateQuestPage";
+import { CreateQuestPage } from "./pages/СreateQuestPage";
 
 // Налаштувати лоадери для сторінок за потреби
 // import FavouritesPageLoader from "./pages/FavouritesPage/Loader";
@@ -25,34 +25,34 @@ import { СreateQuestPage } from "./pages/СreateQuestPage";
 
 export const Root = () => (
   <HashRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<HomePage />} />
+    <Routes>
+      <Route path="/" element={<App />}>
+        <Route index element={<HomePage />} />
 
-          <Route path="home" element={<Navigate to="/" replace />} />
+        <Route path="home" element={<Navigate to="/" replace />} />
 
-          <Route path="sing-in">
-            <Route index element={<SingInPage />} />
-          </Route>
-
-          <Route path="sing-up">
-            <Route index element={<SingUpPage />} />
-          </Route>
-
-          <Route path="profile">
-            <Route index element={<ProfilePage />} />
-          </Route>
-
-          <Route path="create">
-            <Route index element={<СreateQuestPage />} />
-          </Route>
-
-          <Route path="quest">
-            <Route index element={<QuestPage />} />
-          </Route>
-
-          <Route path="*" element={<NotFoundPage />} />
+        <Route path="sing-in">
+          <Route index element={<SingInPage />} />
         </Route>
-      </Routes>{" "}
+
+        <Route path="sing-up">
+          <Route index element={<SingUpPage />} />
+        </Route>
+
+        <Route path="profile">
+          <Route index element={<ProfilePage />} />
+        </Route>
+
+        <Route path="create">
+          <Route index element={<CreateQuestPage />} />
+        </Route>
+
+        <Route path="quest">
+          <Route index element={<QuestPage />} />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>{" "}
   </HashRouter>
 );
