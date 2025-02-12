@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AnswerOption;
 use App\Models\Quest;
+use App\Models\QuestProgress;
 use App\Models\Rating;
 use App\Models\Task;
 use App\Models\User;
@@ -22,5 +23,6 @@ class DatabaseSeeder extends Seeder
         Task::factory(30)->create();
         AnswerOption::factory(80)->create();
         Rating::factory(20)->create();
+        QuestProgress::factory(20)->create();
     }
 }

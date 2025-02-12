@@ -29,4 +29,9 @@ class Quest extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'quest_id', 'id');
+    }
 }

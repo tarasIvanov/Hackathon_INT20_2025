@@ -4,6 +4,7 @@ use App\Http\Controllers\AnswerOptionController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\QuestController;
+use App\Http\Controllers\QuestProgressController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
@@ -64,3 +65,14 @@ Route::delete('/answer_option/{answerOption}', [AnswerOptionController::class, '
 
 Route::get('/rating', [RatingController::class, 'index']);
 Route::get('/rating/{rating}', [RatingController::class, 'show']);
+Route::post('/rating', [RatingController::class, 'store']);
+Route::put('/rating/{rating}', [RatingController::class, 'update']);
+Route::delete('/rating/{rating}', [RatingController::class, 'destroy']);
+
+Route::get('/quest_progress', [QuestProgressController::class, 'index']);
+Route::get('/quest_progress/{questProgress}', [QuestProgressController::class, 'show']);
+Route::post('/quest_progress', [QuestProgressController::class, 'store']);
+Route::put('/quest_progress/{questProgress}', [QuestProgressController::class, 'update']);
+
+Route::get('user/{user}/ratings', [RatingController::class, 'getUserRatings']);
+Route::get('quest/{quest}/ratings', [RatingController::class, 'getQuestRatings']);

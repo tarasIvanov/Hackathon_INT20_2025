@@ -25,10 +25,12 @@ class TaskFactory extends Factory
         return [
             'quest_id' => $this->faker->randomElement($quests),
             'name' => $this->faker->name(),
-            'question' => $this->faker->text(),
-            'has_options' => $hasAnswerOptions,
-            'answer' => $hasAnswerOptions ? null : $this->faker->text(),
-            'time_limit' => $this->faker->randomNumber(2),
+            'description' => $this->faker->text(),
+            
+//            'question' => $this->faker->text(),
+//            'has_options' => $hasAnswerOptions,
+//            'answer' => $hasAnswerOptions ? null : $this->faker->text(),
+//            'time_limit' => $this->faker->randomNumber(2),
         ];
     }
 }
